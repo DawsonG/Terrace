@@ -1,0 +1,21 @@
+{
+  "name": "terrace",
+  "description": "A Node.js blogging and CMS platform.",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "express": "^4.13.3",
+    "lwip": "^0.0.8"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.5.2",
+    "gulp-sass": "^2.0.4"
+  },
+  "engines": {
+    "node": "v4.1.1"
+  },
+  "scripts": {
+    "start" : "node terrace.js"
+  }
+}
