@@ -6,13 +6,16 @@ module.exports = function(app) {
   });
 
   app.get('/admin', function(req, res) {
-    res.sendFile(__dirname + "/admin/index.html");
+    // Validate that the user is logged in.
+
+    // Send the default file.
+    res.sendFile(__dirname + "/admin/dist/index.html");
   });
 
-  app.get('/tlibs/*', function(req, res) {
+  app.get(['/admin/js/*', '/admin/css/*'], function(req, res) {
     // Validate that we are logged in.
 
     // Send whatever file is needed.
-    res.sendFile(__dirname + "/admin/libs/" + req.params[0]);
+    res.sendFile(__dirname + "/admin/dist/build/" + req.params[0]);
   });
 };
