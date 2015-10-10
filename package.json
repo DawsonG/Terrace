@@ -8,13 +8,12 @@
     "express": "^4.13.3",
     "lwip": "^0.0.8",
     "react": "^0.14.0",
-    "reactify": "^1.1.1",
-    "vinyl-source-stream": "^1.1.0"
+    "react-dom": "^0.14.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
-    "gulp-concat": "^2.5.2",
-    "gulp-sass": "^2.0.4"
+    "reactify": "^1.1.1",
+    "vinyl-source-stream": "^1.1.0"
   },
   "engines": {
     "node": "v4.1.1"

@@ -1,38 +1,109 @@
-var gulp = require('gulp');
-var browserify = require('browserify');
-var reactify = require('reactify');
-var source = require('vinyl-source-stream');
+var browserify = require('browserify'),
+  gulp = require('gulp'),
+  source = require('vinyl-source-stream'),
+  streamify = require('streamify'),
+  buffer = require('vinyl-buffer'),
+//  buffer = require('vinyl-buffer'),
+//  gutil = require('gulp-util'),
+  uglify = require('gulp-uglify'),
+//  sourcemaps = require('gulp-sourcemaps'),
+  reactify = require('reactify');
 
-var SRC_DIR = './admin/assets';
-var DEST_DIR = './static';
 
-gulp.task('browserify', function(){
-  return browserify(SRC_DIR + '/js/main.js',{debug:true})
-    .transform('reactify')
-    .bundle()
-    .on('error',function(err){
-      console.log('error',err.stack);
-      console.log('-- THERE IS AN ERROR SEE ABOVE --');
-      this.emit('end');
-    })
-    .pipe(source('main.js'))
-    .pipe(gulp.dest(DEST_DIR + '/js'));
+var path = {
+  HTML: 'admin/src/index.html',
+  ENTRY: 'admin/src/js/application.jsx',
+  JS: ['admin/src/js/*.jsx', 'admin/src/js/**/*.jsx'],
+  MINIFIED_OUT: 'js/bundle.min.js',
+  DEST_SRC: 'admin/dist/src',
+  DEST_BUILD: 'admin/dist/build',
+  DEST: 'admin/dist'
+};
+
+gulp.task('build', function() {
+  gulp.src(path.HTML).pipe(gulp.dest(path.DEST));
+  
+  var b = browserify({
+    entries: path.ENTRY, // Only need initial file, browserify finds the dependencies
+    transform: [reactify], // We want to convert JSX to normal javascript
+    cache: {}, packageCache: {}, fullPaths: true // Requirement of watchify
+  });
+
+  return b.bundle()
+    .pipe(source(path.MINIFIED_OUT))
+    .pipe(buffer())
+    .pipe(uglify())
+    .pipe(gulp.dest(path.DEST));
 });
 
+/*
 gulp.task('copy', function(){
-  return gulp.src([SRC_DIR + '/**/*.*','!' + SRC_DIR + '/js/**/*.*'])
-  .pipe(gulp.dest(DEST_DIR));
+  gulp.src(path.HTML)
+    .pipe(gulp.dest(path.DEST));
 });
 
-gulp.task('build',['browserify', 'copy']);
+gulp.task('watch', function() {
+  gulp.watch(path.HTML, ['copy']);
 
-gulp.task('watch',function(){
-  return gulp.watch(SRC_DIR + '/**/*.*', ['build']);
+  var watcher  = watchify(browserify({
+    entries: [path.ENTRY_POINT],
+    transform: [reactify],
+    debug: true,
+    cache: {}, packageCache: {}, fullPaths: true
+  }));
+
+  return watcher.on('update', function () {
+    watcher.bundle()
+      .pipe(source(path.OUT))
+      .pipe(gulp.dest(path.DEST_SRC));
+
+      console.log('Updated');
+  })
+  .bundle()
+  .pipe(source(path.OUT))
+  .pipe(gulp.dest(path.DEST_SRC));
 });
 
-gulp.task('default',['build','watch']);
+gulp.task('browserify', function() {
+  var bundler = browserify({
+    entries: ['./admin/src/application.jsx'], // Only need initial file, browserify finds the deps
+    transform: [reactify], // We want to convert JSX to normal javascript
+    debug: true, // Gives us sourcemapping
+    cache: {}, packageCache: {}, fullPaths: true // Requirement of watchify
+  });
+  var watcher  = watchify(bundler);
 
+  return watcher.on('update', function () { // When any files update
+    var updateStart = Date.now();
+    console.log('Updating!');
+    
+    watcher.bundle() // Create new bundle that uses the cache for high performance
+      .pipe(source('application.jsx'))
+      .pipe(gulp.dest('./build/'));
+      
+      console.log('Updated!', (Date.now() - updateStart) + 'ms');
+  })
+  .bundle() // Create the initial bundle when starting the task
+  .pipe(source('application.jsx'))
+  .pipe(gulp.dest('./build/'));
+});
 
+gulp.task('build', function(){
+  gulp.src(path.HTML)
+    .pipe(gulp.dest(path.DEST));
 
+  browserify({
+    entries: [path.ENTRY_POINT],
+    transform: [reactify],
+  })
+  .bundle()
+  .pipe(source(path.MINIFIED_OUT))
+  .pipe(streamify(uglify(path.MINIFIED_OUT)))
+  .pipe(gulp.dest(path.DEST_BUILD));
+});
 
+*/
 
+gulp.task('production', ['replaceHTML', 'build']);
+
+gulp.task('default', ['build']);
