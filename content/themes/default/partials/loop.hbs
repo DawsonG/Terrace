@@ -1,7 +1,8 @@
-{{#foreach posts}}
-    {{content}}
+{{#each posts}}
+  <h1>{{name}}</h1>
+  {{content}}
 
-    <p class="information">
-        By {{author_name}} | {{format publish_date}}
-    </p>
-{{/foreach}}
+  <p class="information">
+      By {{author_name}} | {{publish_date}}
+  </p>
+{{/each}}

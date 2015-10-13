@@ -1,43 +1,36 @@
 exports.index = function(req, res) {
-  var hbs = require('express-hbs');
-  var viewsDir = process.cwd() + "/content/themes/" + req.site.theme;
+  var expressHbs = require('express-handlebars');
+  
+  var base = process.cwd();
+  var path = {
+    base  : base, // the root of the application
+    theme : base + "/content/themes/" + req.site.theme
+  }
 
-  res.app.engine('hbs', hbs.express4({
-    partialsDir: process.cwd() + "/content/themes/" + req.site.theme + "/partials",
-    viewsDir: viewsDir
-  }));
-  res.app.set('view engine', 'hbs');
-  res.app.set('views', viewsDir);
+  function pathFix(file) {
+    return path.theme + '/' + file;
+  }
+  
 
-  /*
-  handlebars.renderTemplate(process.cwd() + "/content/themes/" + req.site.theme + '/default.hbs', {}, process.cwd() + "/content/themes/" + req.site.theme + '/index.hbs', function(err, result) {
+  hbs = expressHbs.create({
+    partialsDir: pathFix("partials"),
+    helpers: require('../libs/helpers.js'),
+    extname: ".hbs"
+  }); 
+  hbs.renderView(path.theme + '/index.hbs', { 
+    layout: path.theme + '/default.hbs',
+
+    // DATA PASSED
+    posts: [{ name: "test", content: "test content, test content, test content", author_name: "Ima Tester", publish_date: "2015/10/13 16:52:04" }],
+    tags: [{ name: "test tag"}]    
+  }, function(err, result) {
     if (err) {
-      return res.status(500);
+      console.log(err);
+      return res.status(500).send("looks like a theme problem");
     }
 
-    console.log(result);
     res.write(result);
     res.end();
   });
-  */
-
-/*
-  var promise = new Promise(function(resolve, reject) {
-    req.db.collection('site').findOne({}, function(err, site) {
-      if (err || !site)
-        reject();
-
-      resolve(site);
-    });
-  });
-
-  promise.then(function(site) {
-    handlebars.partialsDir = __dirname + "/content/themes/" + site.theme + "/partials";
-    console.log(handlebars);
-  });
-*/
-
-  return res.render('index');
-  //
 };
 
