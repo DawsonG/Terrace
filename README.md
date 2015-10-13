@@ -8,3 +8,9 @@ __Still early in development.  This repo is for ongoing work.  No stable builds 
 * Fast - Terrace uses a Node.js backend optimised for performance.
 * Layered - Terrace is layered so that someone can add just the API to an existing project and build their own backend.  Or maybe they want the backend and API but already have a frontend.  We can do that too.  Above those layers we have a plugin and theming layer allowing anyone to install the functionality they need.
 * Simple Datasources - Instead of a sprawling database, Terrace keeps things simple.  All content for readers is stored as "posts" which can be ordered chronologically like a blog or manually like a website.  You can even have a mix of both thanks to tagging.
+
+## Configure environment
+
+## Running Tests
+1 Install jasmine-node with `npm install -g jasmine-node
+2 Run the tests with `jasmine-node ./tests
