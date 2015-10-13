@@ -5,9 +5,6 @@ module.exports = function(app) {
     return true;
   };
 
-  // ---- Frontend ----
-  app.get('/*', controller.index);
-
   // ---- API Endpoints ----
   //app.get('/api/:controller/:action', api);
 
@@ -27,4 +24,7 @@ module.exports = function(app) {
       res.status(420).send("Forbidden");
     }
   });
+
+  // ---- Frontend ----
+  app.get('/*', controller.index);
 };

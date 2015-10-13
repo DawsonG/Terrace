@@ -26,6 +26,7 @@
     "node": "v4.1.1"
   },
   "scripts": {
+    "test": "jasmine-node ./tests --verbose",
     "start": "node terrace.js"
   }
 }

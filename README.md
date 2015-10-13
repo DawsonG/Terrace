@@ -13,4 +13,4 @@ __Still early in development.  This repo is for ongoing work.  No stable builds 
 
 ## Running Tests
 1. Install jasmine-node with `npm install -g jasmine-node
-2. Run the tests with `jasmine-node ./tests
+2. Run the tests with `npm test`
