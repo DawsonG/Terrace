@@ -1,21 +1,30 @@
 module.exports = function(app) {
-  // These will need to be passed off to controllers
+  var controller = require('./libs/controller.js');
+  
+  var validateUser = function() {
+    return true;
+  };
 
-  app.get('/', function(req, res) {
+  // ---- Frontend ----
+  app.get('/*', controller.index);
 
-  });
+  // ---- API Endpoints ----
+  //app.get('/api/:controller/:action', api);
 
-  app.get('/admin', function(req, res) {
+  // ---- ADMIN Endpoints ----
+  // Cheryl edit here! V V V
+  app.get('/admin*', function(req, res) {
+    var file = req.params[0];
+    if (!file) {
+      file = "index.html";
+    }
+
     // Validate that the user is logged in.
-
-    // Send the default file.
-    res.sendFile(__dirname + "/admin/dist/index.html");
-  });
-
-  app.get('/admin/*', function(req, res) {
-    // Validate that we are logged in.
-
-    // Send whatever file is needed.
-    res.sendFile(__dirname + "/admin/dist/" + req.params[0]);
+    if (validateUser()) {
+      // Send whatever file is needed.
+      res.sendFile(__dirname + "/admin/dist/" + file);
+    } else {
+      res.status(420).send("Forbidden");
+    }
   });
 };

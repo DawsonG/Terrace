@@ -4,18 +4,21 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "browserify": "^11.2.0",
     "express": "^4.13.3",
-    "gulp-uglify": "^1.4.1",
+    "express-hbs": "^0.8.4",
+    "fs-extra": "^0.24.0",
     "lwip": "^0.0.8",
+    "mongodb": "^2.0.45",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",
     "streamify": "^0.2.5",
     "vinyl-buffer": "^1.0.0"
   },
   "devDependencies": {
+    "browserify": "^11.2.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
+    "gulp-uglify": "^1.4.1",
     "reactify": "^1.1.1",
     "vinyl-source-stream": "^1.1.0"
   },
