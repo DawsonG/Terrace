@@ -1,12 +1,13 @@
 module.exports = function(app) {
   var controller = require('./libs/controller.js');
+  var api = require('./api/api_base.js');
   
   var validateUser = function() {
     return true;
   };
 
   // ---- API Endpoints ----
-  //app.get('/api/:controller/:action', api);
+  app.get('/api/:controller/:action', api);
 
   // ---- ADMIN Endpoints ----
   // Cheryl edit here! V V V

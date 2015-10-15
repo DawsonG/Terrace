@@ -48,10 +48,10 @@ gulp.task('build', function(){
     entries: [path.ENTRY_POINT],
     transform: [reactify],
   })
-    .bundle()
-    .pipe(source(path.MINIFIED_OUT))
-    .pipe(streamify(uglify(path.MINIFIED_OUT)))
-    .pipe(gulp.dest(path.DEST_BUILD));
+  .bundle()
+  .pipe(source(path.MINIFIED_OUT))
+  .pipe(streamify(uglify(path.MINIFIED_OUT)))
+  .pipe(gulp.dest(path.DEST_BUILD));
 });
 
 gulp.task('replaceHTML', function(){
