@@ -2,6 +2,9 @@
 /*  {
 /*    title: "Whatever the title is",
 /*    slug: "whatever-the-title-is",
+/*    author_name: "Ima Author",
+/*    status: "draft|archived|published",
+/*    publish_date: new Date(),
 /*    tags: [
 /*      <tag_object>,
 /*      <tag_object>
