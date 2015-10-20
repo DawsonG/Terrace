@@ -1,7 +1,7 @@
 module.exports = function(app) {
   var controller = require('./libs/controller.js');
   var api = require('./api/api_base.js');
-  
+
   var validateUser = function() {
     return true;
   };
@@ -20,7 +20,7 @@ module.exports = function(app) {
     // Validate that the user is logged in.
     if (validateUser()) {
       // Send whatever file is needed.
-      res.sendFile(__dirname + "/admin/dist/" + file);
+      res.sendFile(__dirname + "/admin/" + file);
     } else {
       res.status(420).send("Forbidden");
     }

@@ -1,4 +1,7 @@
-var App = React.createClass({
+var React = require('react');
+var ReactDOM = require('react-dom');
+
+var Main = React.createClass({
   render: function() {
     $.get('/api/posts/getOne', {
       query: { record : 10 }
@@ -14,4 +17,4 @@ var App = React.createClass({
   }
 });
 
-module.exports = App;
+module.exports = Main;
