@@ -10,7 +10,6 @@ module.exports = function(app) {
   app.get('/api/:controller/:action', api);
 
   // ---- ADMIN Endpoints ----
-  // Cheryl edit here! V V V
   app.get('/admin*', function(req, res) {
     var file = req.params[0];
     if (!file) {

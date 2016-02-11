@@ -10,6 +10,7 @@
 
 var express        = require('express');  
 var app            = express();
+var http           = require('http');
 
 var MongoClient    = require('mongodb').MongoClient;
 var settings       = require('./settings.json');
@@ -25,6 +26,16 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
     console.log("database connection open");
     
     db.collection("site").findOne({}, function(err, site) {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      
+      if (!site) {
+        site = require("settings.json");
+        db.collection("site").insert(site);
+      }
+      
       var attachDB = function(req, res, next) {
         req.db = db;
         next();
@@ -39,9 +50,11 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
       app.use(attachSite); // attachSite is called before each request so we can get the base site information
       require('./routes')(app);
 
-      app.listen(port, function() {
-        console.log('Server started: http://localhost:' + app.get('port') + '/');
+      var server = http.createServer(app).listen(port, function() {
+        console.log('Express server listening on port ' + port);
       });
+      
+      var io = require('socket.io').listen(server);
     });
   }
 });

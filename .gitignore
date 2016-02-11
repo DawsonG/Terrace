@@ -32,3 +32,5 @@ bower_components
 
 # Don't include build directories
 admin/dist
+data
+mongod

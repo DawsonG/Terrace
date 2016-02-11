@@ -1,4 +1,6 @@
 {
   "ENVIRONMENT" : "DEVELOPMENT",
-  "DATABASE_URL" : "mongodb://127.0.0.1:27017/terrace"
+  "DATABASE_URL" : "mongodb://127.0.0.1:27017/terrace",
+  "theme": "default",
+  "site_name": "terrace_site"
 }

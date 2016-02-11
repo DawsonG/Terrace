@@ -1,21 +1,33 @@
-var webpack = require('webpack');
 module.exports = {
-    entry: './admin/src/Admin.js',
+    entry: './admin/src/index.jsx',
     output: {
-        // path: __dirname + '/build',
-        filename: "admin/dist/bundle.js"
+        filename: './admin/bundle.js', //this is the default name, so you can skip it
+        //at this directory our bundle file will be available
+        //make sure port 8090 is used when launching webpack-dev-server
+        publicPath: 'http://localhost:8090/assets'
     },
     module: {
         loaders: [
             {
-                exlude: /(node_modules|terrace.js)/,
-                loader: 'babel'
+                //tell webpack to use jsx-loader for all *.jsx files
+                test: /\.jsx$/,
+                loader: 'jsx-loader?insertPragma=React.DOM&harmony'
+            },
+            {
+                test: /\.scss$/,
+                loaders: ["style", "css", "sass"]
             }
-            // { test: /\.css$/, loader: "style!css" }
         ]
     },
-    plugins: [
-      new webpack.NoErrorsPlugin()
-    ]
-
-};
+    sassLoader: {
+        includePaths: ["./admin/src/scss"]
+    },
+    externals: {
+        //don't bundle the 'react' npm package with our bundle.js
+        //but get it from a global 'React' variable
+        //'react': 'React'
+    },
+    resolve: {
+        extensions: ['', '.js', '.jsx']
+    }
+}
