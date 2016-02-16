@@ -25,16 +25,18 @@
 /*  }                              ***/
 
 exports.getById = function(req, res) {
-  req.db.collection('posts').findOne(req.body.id, function(err, result) {
-    if (err) res.send(err);
+  req.db.collection('posts').findOne(req.query.id, function(err, result) {
+    if (err)
+      return res.send(err);
     
     return res.json(result);
   });
 };
 
 exports.getOne = function(req, res) {
-  req.db.collection('posts').findOne(req.body.query, function(err, result) {
-    if (err) res.send(err);
+  req.db.collection('posts').findOne(req.query.query, function(err, result) {
+    if (err)
+      return res.send(err);
     
     return res.json(result);
   });
@@ -57,7 +59,8 @@ exports.getAll = function(req, res) {
 
 exports.create = function(req, res) {
   req.db.collection('posts').insertOne(req.body.post, function(err, result) {
-    if (err) res.send(err);
+    if (err) 
+      return res.send(err);
 
     return res.json({ success: true, post: result });
   });
@@ -65,7 +68,8 @@ exports.create = function(req, res) {
 
 exports.update = function(req, res) {
   req.db.collection('posts').updateOne(req.body.query, req.body.updateCommand, function(err, result) {
-    if (err) res.send(err);
+    if (err) 
+      return res.send(err);
 
     return res.json({ success: true, post: result });
   });

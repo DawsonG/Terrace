@@ -1,6 +1,9 @@
 var fs = require('fs');
 
 module.exports = function(req, res, next) {
+  console.log(req);
+  console.log(res);
+  
   var controller;
 
   var baseDir = process.cwd() + "/api/";

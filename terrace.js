@@ -9,14 +9,21 @@
  * =========================================================== */
 
 var express        = require('express');  
-var app            = express();
+var session        = require('express-session');
+var bodyParser     = require('body-parser');
+var cookieParser   = require('cookie-parser');
 var http           = require('http');
 
 var MongoClient    = require('mongodb').MongoClient;
+var MongoStore     = require('connect-mongo')(session);
 var settings       = require('./settings.json');
 
+var app            = express();
 var port = process.env.PORT || 4200;
 app.set('port', port);
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Open Mongoose
 MongoClient.connect(settings.DATABASE_URL, function(err, db) {
@@ -25,6 +32,15 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
   } else {
     console.log("database connection open");
     
+    app.use(session({
+      	secret: settings.SECRET,
+      	proxy: true,
+      	resave: true,
+      	saveUninitialized: true,
+      	store: new MongoStore({ db: db })
+    	})
+    );
+    
     db.collection("site").findOne({}, function(err, site) {
       if (err) {
         console.log(err);
@@ -32,7 +48,7 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
       }
       
       if (!site) {
-        site = require("settings.json");
+        site = settings;
         db.collection("site").insert(site);
       }
       

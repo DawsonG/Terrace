@@ -32,5 +32,6 @@ bower_components
 
 # Don't include build directories
 admin/dist
+content/themes/ark
 data
 mongod
