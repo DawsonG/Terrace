@@ -7,9 +7,9 @@ var moment      = require('moment');
 /* login validation methods */
 
 exports.autoLogin = function(user, pass, db, callback) {
-	db.collection('accounts').findOne({user:user}, function(e, o) {
+	db.collection('accounts').findOne({email:user}, function(e, o) {
 		if (o){
-			o.pass == pass ? callback(o) : callback(null);
+			o.password == pass ? callback(o) : callback(null);
 		}	else{
 			callback(null);
 		}
@@ -17,11 +17,11 @@ exports.autoLogin = function(user, pass, db, callback) {
 }
 
 exports.manualLogin = function(user, pass, db, callback) {
-	db.collection('accounts').findOne({user:user}, function(e, o) {
+	db.collection('accounts').findOne({email:user}, function(e, o) {
 		if (o == null){
 			callback('user-not-found');
 		}	else{
-			validatePassword(pass, o.pass, function(err, res) {
+			validatePassword(pass, o.password, function(err, res) {
 			    if (err) throw err;
 			    
 				if (res){
@@ -35,29 +35,23 @@ exports.manualLogin = function(user, pass, db, callback) {
 }
 
 /* record insertion, update & deletion methods */
-/*
-exports.addNewAccount = function(newData, callback)
-{
-	accounts.findOne({user:newData.user}, function(e, o) {
-		if (o){
-			callback('username-taken');
-		}	else{
-			accounts.findOne({email:newData.email}, function(e, o) {
-				if (o){
-					callback('email-taken');
-				}	else{
-					saltAndHash(newData.pass, function(hash){
-						newData.pass = hash;
-					// append date stamp when record was created //
-						newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
-						accounts.insert(newData, {safe: true}, callback);
-					});
-				}
+exports.addNewAccount = function(newData, db, callback) {
+	var accounts = db.collection('accounts');
+	
+	accounts.findOne({email:newData.email}, function(e, o) {
+		if (o) {
+			callback('email-taken');
+		} else {
+			saltAndHash(newData.password, function(hash){
+				newData.password = hash;
+				// append date stamp when record was created //
+				newData.created = moment().format('MMMM Do YYYY, h:mm:ss a');
+				accounts.insert(newData, {safe: true}, callback);
 			});
 		}
 	});
-}
-
+};
+ /*
 exports.updateAccount = function(newData, callback)
 {
 	accounts.findOne({user:newData.user}, function(e, o){

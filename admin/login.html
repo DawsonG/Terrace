@@ -12,6 +12,43 @@
   <script src="/admin/js/semanticui.min.js"></script>
 </head>
 <body>
-  <div id="container" class="ui container"></div>
+  <div id="container" class="ui container">
+    <div class="ui one column stackable center aligned page grid">
+    	<div class="column eight wide" style="margin-top: 150px;">
+    		<form class="ui form login" method="post">
+    			<h1 class="ui dividing header">Terrace Login</h1>
+    
+    			{{#each flashes}}
+    				<div class="ui {{priority}} message">
+    					<i class="close icon"></i>
+    					<div class="header">
+    						{{{message}}}
+    					</div>
+    				</div>
+    			{{/each}}
+    
+    			<div class="required field">
+    				<label for="email">Email</label>
+    				<div class="ui labeled left icon input">
+    					<i class="user icon"></i>
+    					<input type="text" id="email" name="email" maxlength="60">
+    				</div>
+    			</div>
+    
+    			<div class="required field">
+    				<label for="password">Password</label>
+    				<div class="ui labeled left icon input">
+    					<i class="lock icon"></i>
+    					<input type="password" id="password" name="password" maxlength="60">
+    				</div>
+    			</div>
+    
+    			<input type="hidden" id="redirect" name="redirect" value="{{redirect}}">
+    
+    			<button type="submit" class="ui submit primary button fluid">Log In</button>
+    		</form>
+    	</div>
+    </div>
+  </div>
 </body>
 </html>

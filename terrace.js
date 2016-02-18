@@ -41,37 +41,34 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
     	})
     );
     
-    db.collection("site").findOne({}, function(err, site) {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      
-      if (!site) {
-        site = settings;
-        db.collection("site").insert(site);
-      }
-      
-      var attachDB = function(req, res, next) {
-        req.db = db;
-        next();
-      };
+    var attachDB = function(req, res, next) {
+      req.db = db;
+      next();
+    };
 
-      var attachSite = function(req, res, next) {
+    var attachSite = function(req, res, next) {
+      db.collection("site").findOne({}, function(err, site) {
+        if (!site && req.originalUrl != "/install" && 
+          req.originalUrl.indexOf('/css/') < 0 && req.originalUrl.indexOf('/js/') < 0) {
+          return res.redirect('/install');
+        }
+        
         req.site = site;
         next();
-      };
-
-      app.use(attachDB); // attachDB is called before each request and allows us to get the database from the request object
-      app.use(attachSite); // attachSite is called before each request so we can get the base site information
-      require('./routes')(app);
-
-      var server = http.createServer(app).listen(port, function() {
-        console.log('Express server listening on port ' + port);
       });
-      
-      var io = require('socket.io').listen(server);
+    };
+
+    app.use(attachDB); // attachDB is called before each request and allows us to get the database from the request object
+    app.use(attachSite);
+    require('./routes')(app);
+
+    var server = http.createServer(app).listen(port, function() {
+      console.log('Express server listening on port ' + port);
     });
+      
+    if (settings.ENABLE_SOCKETS) { // sockets are used by the backend and are totally optional
+      var io = require('socket.io').listen(server);
+    }
   }
 });
 

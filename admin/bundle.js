@@ -66,7 +66,8 @@
 	            React.createElement("div", {className: "three wide column"}, 
 	                React.createElement(Menu, null, 
 	                    React.createElement(MenuItem, {name: "Dashboard", label: "0", active: "true"}), 
-	                    React.createElement(MenuItem, {name: "Content"})
+	                    React.createElement(MenuItem, {name: "Content"}), 
+	                    React.createElement(MenuItem, {name: "Users"})
 	                )
 	            ), 
 	            React.createElement("div", {className: "thirteen wide column"}, 
@@ -113,7 +114,7 @@
 
 
 	// module
-	exports.push([module.id, ".ui.container {\n  padding-top: 10px; }\n", ""]);
+	exports.push([module.id, "#container {\n  padding: 10px; }\n", ""]);
 
 	// exports
 
@@ -20047,7 +20048,8 @@
 	    
 	    render: function() {
 	        return (React.createElement("div", null, 
-	            React.createElement("h1", null, "DASHBOARD")
+	            React.createElement("h1", {className: "ui dividing header"}, "DASHBOARD"), 
+	            React.createElement("p", null, "One day, I very seriously hope to have actual things here.")
 	        ));
 	    }
 	});
@@ -20126,17 +20128,27 @@
 	/** @jsx React.DOM */var React = __webpack_require__(5);
 
 	var MenuItem = React.createClass({displayName: "MenuItem",
+	    handleClick: function(e) {
+	        e.preventDefault();
+	        
+	        this.props.active = true;
+	        this.render();
+	    },
+	    
 	    render: function() {
 	        var name = this.props.name;
 	        var label = this.props.label;
-	        var className = this.props.active == "true" ? 'active item' : 'item';
+	        
+	        console.log("Rendering " + name)
+	        
+	        var className = (this.props.active == "true" || this.props.active) ? 'active item' : 'item';
 	        var badge = "";
 	        
 	        if ($.isNumeric(label) && label > -1)
 	            badge = (React.createElement("div", {className: "ui teal label"}, label));
 	        
 	        return (
-	            React.createElement("a", {className: className}, 
+	            React.createElement("a", {onClick: this.handleClick, className: className}, 
 	                name, 
 	                badge
 	            )

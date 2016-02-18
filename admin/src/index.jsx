@@ -21,6 +21,7 @@ var App = React.createClass({
                 <Menu>
                     <MenuItem name="Dashboard" label="0" active="true" />
                     <MenuItem name="Content" />
+                    <MenuItem name="Users" />
                 </Menu>
             </div>
             <div className="thirteen wide column">

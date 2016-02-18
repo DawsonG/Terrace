@@ -2,6 +2,5 @@
   "ENVIRONMENT" : "DEVELOPMENT",
   "DATABASE_URL" : "mongodb://127.0.0.1:27017/terrace",
   "SECRET": "fudufafa9167u07f78077c76c732617eeb4",
-  "theme": "default",
-  "site_name": "terrace_site"
+  "ENABLE_SOCKETS": true
 }

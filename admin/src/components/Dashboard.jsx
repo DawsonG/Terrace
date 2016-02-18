@@ -12,7 +12,8 @@ var Dashboard = React.createClass({
     
     render: function() {
         return (<div>
-            <h1>DASHBOARD</h1>
+            <h1 className="ui dividing header">DASHBOARD</h1>
+            <p>One day, I very seriously hope to have actual things here.</p>
         </div>);
     }
 });

@@ -1,22 +1,25 @@
 exports.index = function(req, res) {
   var expressHbs = require('express-handlebars');
   
+  if (!req.site)
+    return res.redirect('/install');
+  
   var base = process.cwd();
   var path = {
     base  : base, // the root of the application
     theme : base + "/content/themes/" + req.site.theme
-  }
+  };
 
   function pathFix(file) {
     return path.theme + '/' + file;
   }
   
 
-  hbs = expressHbs.create({
+  var hbs = expressHbs.create({
     partialsDir: pathFix("partials"),
     helpers: require('../libs/helpers.js'),
     extname: ".hbs"
-  }); 
+  });
   hbs.renderView(path.theme + '/index.hbs', { 
     layout: path.theme + '/default.hbs',
 
