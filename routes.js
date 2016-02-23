@@ -11,6 +11,14 @@ module.exports = function(app) {
 		
     return true;
   };
+  
+  var isPublicAsset = function(file) {
+    if (file.indexOf('/css/') > -1 || file.indexOf('/js/') > -1) {
+      return true;
+    }
+    
+    return false;
+  };
 
   // ---- API Endpoints ----
   app.get('/api/:controller/:action', api);
@@ -75,7 +83,7 @@ module.exports = function(app) {
       
     })
     .post(function(req, res) {
-      AM.manualLogin(req.body['user'], req.body['pass'], req.db, function(e, o){
+      AM.manualLogin(req.body['email'], req.body['password'], req.db, function(e, o){
   			if (!o){
   				res.status(400).send(e);
   			}	else{
@@ -84,7 +92,7 @@ module.exports = function(app) {
   					res.cookie('user', o.user, { maxAge: 900000 });
   					res.cookie('pass', o.pass, { maxAge: 900000 });
   				//}
-  				res.status(200).send(o);
+  				return res.redirect('/admin');
   			}
   		});
   });

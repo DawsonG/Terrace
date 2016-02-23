@@ -48,6 +48,8 @@ MongoClient.connect(settings.DATABASE_URL, function(err, db) {
 
     var attachSite = function(req, res, next) {
       db.collection("site").findOne({}, function(err, site) {
+        if (err) throw err;
+        
         if (!site && req.originalUrl != "/install" && 
           req.originalUrl.indexOf('/css/') < 0 && req.originalUrl.indexOf('/js/') < 0) {
           return res.redirect('/install');

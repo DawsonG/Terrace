@@ -15,6 +15,7 @@
     "express-session": "^1.13.0",
     "fs-extra": "^0.24.0",
     "lwip": "^0.0.8",
+    "medium-editor": "^5.14.3",
     "moment": "^2.11.2",
     "mongodb": "^2.0.45",
     "react": "^0.14.7",

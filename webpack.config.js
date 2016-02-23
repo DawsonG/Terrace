@@ -7,6 +7,7 @@ module.exports = {
         publicPath: 'http://localhost:8090/assets'
     },
     module: {
+        noParse: /node_modules\/quill\/dist/,
         loaders: [
             {
                 //tell webpack to use jsx-loader for all *.jsx files

@@ -1,20 +1,19 @@
 var React = require("react");
 
 var MenuItem = React.createClass({
-    handleClick: function(e) {
-        e.preventDefault();
-        
-        this.props.active = true;
-        this.render();
+    getInitialState: function() {
+      return { active: false };  
+    },
+    
+    handleClick: function() {
+      this.props.onClick(this);  
     },
     
     render: function() {
         var name = this.props.name;
         var label = this.props.label;
         
-        console.log("Rendering " + name)
-        
-        var className = (this.props.active == "true" || this.props.active) ? 'active item' : 'item';
+        var className = (this.props.active) ? 'active item' : 'item';
         var badge = "";
         
         if ($.isNumeric(label) && label > -1)

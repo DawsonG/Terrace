@@ -14,7 +14,7 @@ exports.autoLogin = function(user, pass, db, callback) {
 			callback(null);
 		}
 	});
-}
+};
 
 exports.manualLogin = function(user, pass, db, callback) {
 	db.collection('accounts').findOne({email:user}, function(e, o) {
@@ -32,7 +32,7 @@ exports.manualLogin = function(user, pass, db, callback) {
 			});
 		}
 	});
-}
+};
 
 /* record insertion, update & deletion methods */
 exports.addNewAccount = function(newData, db, callback) {

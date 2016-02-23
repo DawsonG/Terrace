@@ -14,26 +14,43 @@ exports.index = function(req, res) {
     return path.theme + '/' + file;
   }
   
+  function getExtension(filename) {
+    return filename.split('.').pop();
+  }
 
-  var hbs = expressHbs.create({
-    partialsDir: pathFix("partials"),
-    helpers: require('../libs/helpers.js'),
-    extname: ".hbs"
-  });
-  hbs.renderView(path.theme + '/index.hbs', { 
-    layout: path.theme + '/default.hbs',
+  
+  var file = req.params[0];
+  if (!file)
+    file = "index.hbs";
+    
+  if (file.indexOf('/uploads/') > -1) // not a special file
+    file = base + "/content" + file;
+  else
+    file = pathFix(file);
 
-    // DATA PASSED
-    posts: [{ name: "test", content: "test content, test content, test content", author_name: "Ima Tester", publish_date: "2015/10/13 16:52:04" }],
-    tags: [{ name: "test tag"}]    
-  }, function(err, result) {
-    if (err) {
-      console.log(err);
-      return res.status(500).send("looks like a theme problem");
-    }
-
-    res.write(result);
-    res.end();
-  });
+  if (getExtension(file) == "hbs") {
+    var hbs = expressHbs.create({
+      partialsDir: pathFix("partials"),
+      helpers: require('../libs/helpers.js'),
+      extname: ".hbs"
+    });
+    hbs.renderView(file, { 
+      layout: path.theme + '/default.hbs',
+  
+      // DATA PASSED
+      posts: [{ name: "test", content: "test content, test content, test content", author_name: "Ima Tester", publish_date: "2015/10/13 16:52:04" }],
+      tags: [{ name: "test tag"}]    
+    }, function(err, result) {
+      if (err) {
+        console.log(err);
+        return res.status(500).send("looks like a theme problem");
+      }
+  
+      res.write(result);
+      res.end();
+    });
+  } else {
+    res.sendFile(file);
+  }
 };
 

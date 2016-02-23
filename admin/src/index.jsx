@@ -15,17 +15,36 @@ var MenuItem = require('./components/MenuItem');
 
 // The root of all our documents.
 var App = React.createClass({
+    getInitialState: function() {
+        return { page: "Dashboard" };
+    },
+    
+    handleClick: function(sender) {
+        this.setState({ page: sender.props.name });
+        sender.setState({ active: true });
+    },
+    
     render: function() {
+        var page = <Dashboard />;
+        switch (this.state.page) {
+            case "Dashboard":
+                page = <Dashboard />;
+                break;
+            case "Content":
+                page = <Content />;
+                break;
+        }
+        
         return (<div className="ui grid">
             <div className="three wide column">
                 <Menu>
-                    <MenuItem name="Dashboard" label="0" active="true" />
-                    <MenuItem name="Content" />
-                    <MenuItem name="Users" />
+                    <MenuItem name="Dashboard" active={this.state.page == "Dashboard" ? true : false} label="0" onClick={this.handleClick} />
+                    <MenuItem name="Content" active={this.state.page == "Content" ? true : false} onClick={this.handleClick} />
+                    <MenuItem name="Users" active={this.state.page == "Users" ? true : false} onClick={this.handleClick} />
                 </Menu>
             </div>
             <div className="thirteen wide column">
-                <Dashboard />
+                {page}
             </div>
         </div>);
     }
