@@ -21,7 +21,7 @@ module.exports = function(app) {
   };
 
   // ---- API Endpoints ----
-  app.get('/api/:controller/:action', api);
+  app.all('/api/:controller/:action', api);
 
   // ---- INSTALL process ----
   app.route('/install')

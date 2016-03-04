@@ -6,6 +6,9 @@ var ContentItem = React.createClass({
     return { post: {} };
   },
   
+  handleEdit: function() {
+    this.props.onItemEdit(this.props.post);
+  },
   
   render: function() {
     var post = this.props.post;
@@ -28,7 +31,7 @@ var ContentItem = React.createClass({
               View
               <i className="right eye icon"></i>
             </a>
-            <a className="ui small primary button">
+            <a className="ui small primary button" onClick={this.handleEdit}>
               Edit
               <i className="right edit icon"></i>
             </a>
@@ -50,7 +53,7 @@ var ContentList = React.createClass({
   },
   
   componentDidMount: function() {
-    this.serverRequest = $.get('/api/posts/getAll', { 
+    this.serverRequest = $.get('/api/posts/getPagesAndPosts', { 
       query: { record : this.props.pageId }
     }, function (results) {
       if (results) 
@@ -63,11 +66,11 @@ var ContentList = React.createClass({
   },
   
   render: function() {
-    var content = [];
+    var self = this;
     
     return (<div className="ui divided items">
       {this.state.posts.map(function(post) {
-          return <ContentItem key={post._id} post={post} />;
+          return <ContentItem key={post._id} post={post} onItemEdit={self.props.onItemEdit} />;
       })}
     </div>);
   }
@@ -75,33 +78,67 @@ var ContentList = React.createClass({
 
 var Content = React.createClass({
   getInitialState: function() {
-    return { page: "ContentList" };
+    return { page: "ContentList", post: null, categories: [] };
+  },
+  
+  componentDidMount: function() {
+    this.serverRequest = $.get('/api/posts/getCategories', {}, function (results) {
+      if (results) 
+        this.setState({ categories: results });
+    }.bind(this));
+  },
+  
+  componentWillUnmount: function() {
+    this.serverRequest.abort();
+  },
+  
+  clickNewPost: function() {
+    this.setState({ page: "ContentEdit", post: null, content_type: "post" });
   },
   
   clickNewPage: function() {
-    this.setState({ page: "ContentEdit" });
+    this.setState({ page: "ContentEdit", post: null, content_type: "page" });
+  },
+  
+  handleItemEdit: function(e) {
+    this.setState({ page: "ContentEdit", post: e._id });
+  },
+  
+  redirectList: function() {
+    this.setState({ page: 'ContentList' });
   },
   
   render: function() {
+    var contextMenu = null;
     var page = null;
     switch(this.state.page) {
       case "ContentList":
-        page = <ContentList />;
+        page = <ContentList onItemEdit={this.handleItemEdit} />;
+        contextMenu = (
+            <div style={{ width: '300px' }} className="right floated two ui small buttons">
+              <button onClick={this.clickNewPost} className="ui primary button">
+                <i className="plus icon"></i> New Post
+              </button>
+              <button onClick={this.clickNewPage} className="ui primary button">
+                <i className="plus icon"></i> New Page
+              </button>
+            </div>
+        );
         break;
       case "ContentEdit":
-        page = <ContentEdit />;
+        page = <ContentEdit postId={this.state.post} contentType={this.state.content_type} redirectList={this.redirectList} />;
         break;
     }
     
     return (
       <div>
-        <h1 className="ui dividing header">
+        <h1 className="ui left floated header">
           CONTENT
-          <a onClick={this.clickNewPage} className="ui right floated small primary button">
-            <i className="plus icon"></i>
-            New Page
-          </a>
         </h1>
+        {contextMenu}
+      
+        <div className="ui clearing divider"></div>
+        
         {page}
       </div>
     );

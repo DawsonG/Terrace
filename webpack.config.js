@@ -7,7 +7,6 @@ module.exports = {
         publicPath: 'http://localhost:8090/assets'
     },
     module: {
-        noParse: /node_modules\/quill\/dist/,
         loaders: [
             {
                 //tell webpack to use jsx-loader for all *.jsx files
@@ -15,8 +14,12 @@ module.exports = {
                 loader: 'jsx-loader?insertPragma=React.DOM&harmony'
             },
             {
-                test: /\.scss$/,
+                test: /\.s?css$/,
                 loaders: ["style", "css", "sass"]
+            },
+            { 
+                test: /\.(png|jpe?g)$/, 
+                loader: 'url-loader?limit=8192'
             }
         ]
     },

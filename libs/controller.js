@@ -1,5 +1,6 @@
 exports.index = function(req, res) {
   var expressHbs = require('express-handlebars');
+  var Post = require("../models/post");
   
   if (!req.site)
     return res.redirect('/install');
@@ -13,34 +14,42 @@ exports.index = function(req, res) {
   function pathFix(file) {
     return path.theme + '/' + file;
   }
-  
-  function getExtension(filename) {
-    return filename.split('.').pop();
+
+  var file = req.params[0];
+  var post_slug = req.params[0];
+
+  if (!post_slug)
+    post_slug = req.site.home_page || "index";
+
+  if (post_slug.indexOf('uploads/') == 0) {
+    return res.sendFile(process.cwd() + '/content/' + post_slug);
   }
 
-  
-  var file = req.params[0];
-  if (!file)
-    file = "index.hbs";
+  var hbs = expressHbs.create({
+    partialsDir: pathFix("partials"),
+    helpers: require('../libs/helpers.js'),
+    extname: ".hbs"
+  });
     
-  if (file.indexOf('/uploads/') > -1) // not a special file
-    file = base + "/content" + file;
-  else
-    file = pathFix(file);
-
-  if (getExtension(file) == "hbs") {
-    var hbs = expressHbs.create({
-      partialsDir: pathFix("partials"),
-      helpers: require('../libs/helpers.js'),
-      extname: ".hbs"
-    });
-    hbs.renderView(file, { 
+  Post.findLivePage(post_slug, function(err, result) {
+    if (err) throw err;
+    
+    if (!result) {
+      // call user a bitch
+      return res.status(404).send("404, page not found.");
+    }
+     
+    if (result.content_type == "image") { //check the media library
+      return res.sendFile(process.cwd() + '/content/' + result.additional.url);
+    }
+    
+    var viewOpts = {
       layout: path.theme + '/default.hbs',
-  
-      // DATA PASSED
-      posts: [{ name: "test", content: "test content, test content, test content", author_name: "Ima Tester", publish_date: "2015/10/13 16:52:04" }],
-      tags: [{ name: "test tag"}]    
-    }, function(err, result) {
+      site: req.site,
+      post: result
+    };
+    
+    hbs.renderView(pathFix('index.hbs'), viewOpts, function(err, result) {
       if (err) {
         console.log(err);
         return res.status(500).send("looks like a theme problem");
@@ -49,8 +58,5 @@ exports.index = function(req, res) {
       res.write(result);
       res.end();
     });
-  } else {
-    res.sendFile(file);
-  }
+  });
 };
-

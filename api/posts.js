@@ -1,31 +1,7 @@
-/*** Unofficial Post Schema Mockup ***/
-/*  {
-/*    title: "Whatever the title is",
-/*    slug: "whatever-the-title-is",
-/*    author_name: "Ima Author",
-/*    status: "draft|archived|published",
-/*    publish_date: new Date(),
-/*    tags: [
-/*      <tag_object>,
-/*      <tag_object>
-/*    ],
-/*    content: {
-/*      raw_type: "markdown|html",
-/*      raw: "Raw content with editor markings, etc.",
-/*      processed: "Ready for display!"
-/*    },
-/*    history: [
-/*      {
-/*        old: <content_object>,
-/*        new: <content_object>,
-/*        userId: "ObjectId",
-/*        timestamp: new Date()
-/*      }
-/*    ]
-/*  }                              ***/
+var Post = require('../models/post');
 
 exports.getById = function(req, res) {
-  req.db.collection('posts').findOne(req.query.id, function(err, result) {
+  Post.findOne(req.query.id, function(err, result) {
     if (err)
       return res.send(err);
     
@@ -33,44 +9,110 @@ exports.getById = function(req, res) {
   });
 };
 
-exports.getOne = function(req, res) {
-  req.db.collection('posts').findOne(req.query.query, function(err, result) {
+exports.getSlugs = function(req, res) {
+  if (!req.session.user)
+    return res.status(403).send();
+  
+  Post.find({}, 'slug', function(err, slugs) {
     if (err)
       return res.send(err);
+      
+    return res.json(slugs);
+  });
+};
+
+function returnUniqueFromArray(field, cb) {
+  Post.find({}, field, function(err, results) {
+    if (err)
+      return cb(err);
     
+    var rtn = [];
+    if (results && results.length > 0) {
+      for (var i = 0; i < results.length; i++) {
+        for (var j = 0; j < results[i][field].length; j++) {
+          var item = results[i][field][j];
+          
+          if (rtn.indexOf(item) == -1)
+            rtn.push(item);
+        }
+      }
+    }
+    
+    return cb(null, rtn);
+  });
+}
+
+exports.getTags = function(req, res) {
+  returnUniqueFromArray('tags', function(err, results) {
+    if (err) throw err;
+    
+    return res.json(results);
+  });
+};
+
+exports.getCategories = function(req, res) {
+  returnUniqueFromArray('categories', function(err, results) {
+    if (err) throw err;
+    
+    return res.json(results);
+  });
+};
+
+exports.getOne = function(req, res) {
+  Post.findOne(req.query.query, function(err, result) {
+    if (err)
+      return res.send(err);
+      
     return res.json(result);
   });
 };
 
 exports.getAll = function(req, res) {
-  var cursor = req.db.collection('posts').find(req.body.query);
-  var rtn = [];
-  cursor.each(function(err, doc) {
+  Post.find(req.body.query, function(err, results) {
     if (err) 
       return res.send(err);
+      
+    return res.json(results);
+  });
+};
 
-    if (doc != null) {
-      rtn.push(doc);
-    } else {
-      return res.json(rtn);
-    }
+exports.getPagesAndPosts = function(req, res) {
+  Post.find({ content_type: { $in: ["page", "post" ]}}, function(err, results) {
+    if (err)
+      return res.send(err);
+      
+    return res.json(results);
   });
 };
 
 exports.create = function(req, res) {
-  req.db.collection('posts').insertOne(req.body.post, function(err, result) {
-    if (err) 
-      return res.send(err);
+  if (!req.session.user)
+    return res.status(403).send();
 
-    return res.json({ success: true, post: result });
+  var post = new Post(req.body);
+  post.save(function() {
+    return res.json({ success: true, post: post });
   });
 };
 
 exports.update = function(req, res) {
-  req.db.collection('posts').updateOne(req.body.query, req.body.updateCommand, function(err, result) {
-    if (err) 
-      return res.send(err);
-
-    return res.json({ success: true, post: result });
+  if (!req.session.user)
+    return res.status(403).send();
+  
+  Post.findById(req.body._id, function(err, post) {
+    if (err) throw err;
+    
+    if (!post) {
+      return res.json({ success: false });
+    }
+    
+    post.title = req.body.title;
+    post.content = req.body.content;
+    post.excerpt = req.body.excerpt;
+    post.save(function(err) {
+      if (err) throw err;      
+      
+      return res.json({ success: true, post: post });
+    });
   });
 };

@@ -2,6 +2,10 @@ var fs = require('fs');
 
 module.exports = function(req, res, next) {
   var controller;
+  
+  if (!req.xhr) {
+    return res.status(403).send("This request does not look like a local AJAX call.");
+  }
 
   var baseDir = process.cwd() + "/api/";
   var controllerName = req.params.controller;
