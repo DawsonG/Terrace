@@ -13,8 +13,10 @@ exports.index = function(req, res) {
     });
     
     rtn.posts = [];
-    Post.find({}, "_id title slug", function(err, results) {
-        if (err) throw err;
+    Post.find(null, "_id title slug", function(err, results) {
+        if (err) {
+            return console.log(err);
+        }
         
         rtn.posts = results;
         return res.json(rtn);
@@ -23,10 +25,13 @@ exports.index = function(req, res) {
 
 exports.post = function(req, res) {
     Site.findById(req.site._id, function(err, site) {
-        if (err) throw err;
+        if (err) {
+            return console.log(err);
+        }
         
         site.name = req.body.name;
         site.theme = req.body.theme;
+        site.home_page = req.body.home_page;
         
         site.save(function() {
             return res.json({ success: true });

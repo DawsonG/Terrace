@@ -48,7 +48,10 @@ db.once('open', function() {
 
   var attachSite = function(req, res, next) {
     db.collection("site").findOne({}, function(err, site) {
-      if (err) throw err;
+      if (err) {
+        console.log("Problem attaching site to request object.");
+        console.log(err);
+      }
       
       if (!site && req.originalUrl != "/install" && 
         req.originalUrl.indexOf('/css/') < 0 && req.originalUrl.indexOf('/js/') < 0) {
@@ -67,6 +70,7 @@ db.once('open', function() {
   var server = http.createServer(app).listen(port, function() {
     console.log('Express server listening on port ' + port);
   });
+  server.timeout = 180000; // timeout at three minutes
     
   if (settings.ENABLE_SOCKETS) { // sockets are used by the backend and are totally optional
     var io = require('socket.io').listen(server);

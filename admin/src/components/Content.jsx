@@ -82,7 +82,7 @@ var Content = React.createClass({
   },
   
   componentDidMount: function() {
-    this.serverRequest = $.get('/api/posts/getCategories', {}, function (results) {
+    this.serverRequest = $.get('/api/posts/getClassifiers', { classifier_type: "category" }, function (results) {
       if (results) 
         this.setState({ categories: results });
     }.bind(this));

@@ -13,7 +13,7 @@ var PostSchema = new Schema({
     slug      	 : { type: String, required: true, unique: true },
 	title     	 : String, //title to display
 	tags      	 : [String],
-	categories	 : [String],
+	category	 : String,
 	content   	 : String,
 	excerpt      : String,
 	alias        : [String], // aliases are redirection slugs.
@@ -39,6 +39,7 @@ PostSchema.statics.findLivePage = function(key, cb) {
 	} else {
 		query.slug = key;
 	}
+	console.log(query);
 	
 	this.findOne(query, function(err, page) {
     	return cb(err, page);
@@ -47,7 +48,9 @@ PostSchema.statics.findLivePage = function(key, cb) {
 
 PostSchema.statics.getUniqueSlug = function(slug, cb) {
  	this.find(null, 'slug', function(err, results) {
-		if (err) throw err;
+		if (err) {
+            return console.log(err);
+        }
 		  
 		var number = 0;
 		var slugs = [];
@@ -90,7 +93,9 @@ PostSchema.methods.addRevision = function(user, cb) {
     var PageModel = this.model('Post');
 
     PageModel.findById(this.id, function(err, page) { 
-        if (err) throw err;
+        if (err) {
+            return console.log(err);
+        }
         
     	var x = page;
 
@@ -107,7 +112,9 @@ PostSchema.methods.addRevision = function(user, cb) {
     		key: page.key,
     		site: page.site
     	}).select("key revision status").sort("-revision").exec(function(err, results) {
-    	    if (err) throw err;
+    	    if (err) {
+	            return console.log(err);
+	        }
     	    
     		if (results) {
     			//Increment the revision number
@@ -117,7 +124,9 @@ PostSchema.methods.addRevision = function(user, cb) {
     			//Important to ensure this is a new record created
     			x._id = null;
 				PageModel.create(x, function(err) {
-        			if (err) throw err;
+        			if (err) {
+			            return console.log(err);
+			        }
 
         			return cb();
         		});
@@ -143,13 +152,15 @@ PostSchema.pre('validate', function(next) {
 	      .replace(/-+$/, '');         // Trim - from end of text
 	}
 
-	
-
-	this.model('Post').getUniqueSlug(slugify(post.title), function(slug) {
-		post.slug = slug;
-		
+	if (this.isNew) {
+		this.model('Post').getUniqueSlug(slugify(post.title), function(slug) {
+			post.slug = slug;
+			
+			return next();
+		});
+	} else {
 		return next();
-	});
+	}
 });
 
 module.exports = mongoose.model("Post", PostSchema);

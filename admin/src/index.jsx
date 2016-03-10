@@ -3,12 +3,12 @@
 // pull in our stylesheets
 var css = require("./scss/styles.scss"); // Custom
 
-// For the medium editor
-require('medium-editor/dist/css/medium-editor.css');
-require('medium-editor/dist/css/themes/default.css');
-
 // For semantic UI
 require("../js/semanticui.min.js");
+
+// For quill editor
+require("../css/quill.base.css");
+require("../css/quill.snow.css");
 
 var React = require('react');
 var ReactDOM = require('react-dom');

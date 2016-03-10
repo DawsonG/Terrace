@@ -35,7 +35,11 @@ module.exports = function(app) {
         name  : fields['site-name'],
         theme : 'default'
       }, {safe:true}, function(err, site) {
-        if (err) { throw err; }
+        if (err) { 
+          console.log("Problem finding site.  Database connectivity?");
+          console.log(err);
+          
+        }
         
         app.use(function(req, res, next) {
           req.site = site;
@@ -44,6 +48,7 @@ module.exports = function(app) {
         
         AM.addNewAccount({ email: fields['email'], password: fields['password'] }, req.db, function(err, result) {
           if (err) {
+            console.log("Problem adding new account.");
             console.log(err);
             return;  
           }
@@ -114,4 +119,5 @@ module.exports = function(app) {
 
   // ---- Frontend ----
   app.get('/*', controller.index);
+  app.post('/contact', controller.contact);
 };

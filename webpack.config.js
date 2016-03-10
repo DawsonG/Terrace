@@ -21,7 +21,8 @@ module.exports = {
                 test: /\.(png|jpe?g)$/, 
                 loader: 'url-loader?limit=8192'
             }
-        ]
+        ],
+        noParse: /node_modules\/quill\/dist/
     },
     sassLoader: {
         includePaths: ["./admin/src/scss"]

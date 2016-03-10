@@ -1,5 +1,126 @@
-var React = require('react');
-var Dropzone = require("./Dropzone");
+var React = require("react");
+var ReactDOM = require("react-dom");
+
+var Dropzone = require("./common/Dropzone");
+var ClassifierDropdown = require("./common/ClassifierDropdown");
+
+
+var MediaItem = React.createClass({
+    getInitialState: function() {
+        return {
+            _id: null,
+            title: "",
+            url: "",
+            thumbnail: {},
+            category: "",
+            tags: []
+        };
+    },
+   
+    componentDidMount: function() {
+        console.log(this.props.image)
+        
+        this.setState({ 
+            _id: this.props.image._id,
+            title: this.props.image.title,
+            category: this.props.image.category,
+            url: "/uploads/thumbnail/" + this.props.image.additional.file_name
+        });
+    },
+    
+    handleSubmit: function() {
+        var self = this;
+        var data = new FormData();
+        
+        data.append("_id", self.state._id);
+        data.append("title", self.state.title);
+        data.append("category", self.state.category);
+        data.append("tags", self.state.tags);
+        data.append("thumbnail", self.state.thumbnail.file);
+        
+        $.ajax({
+            url: '/api/media/media_form',
+            type: 'POST',
+            data: data,
+            cache: false,
+            dataType: 'json',
+            processData: false, // Don't process the files
+            contentType: false,
+            success: function(data, textStatus, jqXHR) {
+                console.log(self.state.thumbnail);
+                self.setState({ url: self.state.thumbnail.imageUrl });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('ERRORS: ' + textStatus);
+            }
+        });
+    },
+    
+    handleTitleChange: function(e) {
+        this.setState({ title: e.target.value });  
+    },
+    
+    handleCategoryChange: function(e) {
+        this.setState({ category: e.target.value });
+    },
+    
+    handleTagChange: function(e) {
+        var dom = ReactDOM.findDOMNode(e.target);
+        
+        this.setState({ tags: $(dom).val() });
+    },
+    
+    onAddFile: function(e) {
+        e.preventDefault();
+        var self = this;
+        
+        var file = null;
+        if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+            file = e.dataTransfer.files[0];
+        } else if (e.target.files && e.target.files.length > 0) {
+            file = e.target.files[0];
+        }
+        
+        var reader = new FileReader();
+        reader.onloadend = function(e) {
+            var res = {file:file, imageUrl:e.target.result};
+            
+            self.setState({ thumbnail: res });
+        };
+        reader.readAsDataURL(file);
+    },
+   
+    render: function() {
+        return (
+            <div className="card">
+                <div className="image">
+                   <img ref="img" src={this.state.url} width="120" height="120"/>
+                </div>
+                <div className="content">
+                    <form className="ui form">
+                        <input type="text" placeholder="Title" value={this.state.title} onChange={this.handleTitleChange} />
+                        
+                        <div className="field">
+                            <ClassifierDropdown placeholder="Category" value={this.state.category} field="category" onChange={this.handleCategoryChange} multiple={false} />
+                        </div>
+                        
+                        <div className="field">
+                            <ClassifierDropdown placeholder="Tags" field="tags" onChange={this.handleTagChange} multiple={true} />
+                        </div>
+                        
+                        <div className="field">
+                            <label>Custom Thumbnail</label>
+                            <input type="file" ref="fileInput" onChange={this.onAddFile} />
+                        </div>
+                    </form>
+                </div>
+                <div className="ui bottom attached primary button" onClick={this.handleSubmit}>
+                    Submit
+                </div>
+            </div>
+        );
+    }
+});
 
 var Media = React.createClass({
     displayName: "Media",
@@ -72,8 +193,9 @@ var Media = React.createClass({
                 return (
                     <div key={image.name} className="card">
                         <div className="image">
-                           <img ref="img" src={image.url} width="120" height="120"/>
+                            <img ref="img" src={image.url} width="120" height="120"/>
                         </div>
+                        <div className="content"></div>
                         <div className="ui bottom attached button">
                             <i className="minus icon"></i>
                             Remove
@@ -91,11 +213,7 @@ var Media = React.createClass({
             <div className="ui six cards">
                 {this.state.media.map(function(image) {
                   return (
-                    <div key={image._id} className="card">
-                        <div className="image">
-                           <img ref="img" src={'/uploads/small/' + image.additional.file_name} width="120" height="120"/>
-                        </div>
-                    </div>
+                    <MediaItem key={image._id} image={image} />
                   );
                 })}
             </div>

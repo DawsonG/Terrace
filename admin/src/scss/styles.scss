@@ -36,3 +36,12 @@
     width: 250px;
     background-color: #fff;
 }
+
+.quill {
+    border: solid 1px #c0c0c0;
+    min-height: 150px;
+    
+    .quill-toolbar.ql-toolbar {
+        border-bottom: solid 1px #c0c0c0;
+    }
+}

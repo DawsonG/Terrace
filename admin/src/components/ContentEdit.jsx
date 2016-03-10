@@ -1,5 +1,9 @@
 var React = require('react');
-var MediumEditor = require("react-medium-editor");
+var brace = require('brace');
+var AceEditor = require("react-ace");
+
+require('brace/mode/handlebars');
+require("brace/theme/github");
 
 
 function slugify(text) {
@@ -22,12 +26,12 @@ var ContentEdit = React.createClass({
         };
     },
     
-    handleContentChange: function(text, medium) {
-        this.setState({ content: text });  
+    handleContentChange: function(newValue) {
+        this.setState({ content:newValue });  
     },
     
-    handleExcerptChange: function(text, medium) {
-        this.setState({ excerpt: text });  
+    handleExcerptChange: function(e) {
+        this.setState({ excerpt: e.target.value });  
     },
     
     handleTitleChange: function(event) {
@@ -113,25 +117,20 @@ var ContentEdit = React.createClass({
             
             <div className="field">
                 <label htmlFor="content">Content</label>
-                <MediumEditor
-                    id="content"
+                <AceEditor
+                    mode="handlebars"
+                    theme="github"
                     name="content"
-                    className="medium"
-                    text={this.state.content}
+                    height="400px"
+                    width="100%"
+                    value={this.state.content}
                     onChange={this.handleContentChange}
-                    options={{toolbar: {buttons: ['bold', 'italic', 'underline', 'image', 'h1', 'h2', 'h3']}}}
-                />
+                 />
             </div>
             
             <div className="field">
-                <label htmlFor="exerpt">Excerpt</label>
-                <MediumEditor
-                  id="exerpt"
-                  name="excerpt"
-                  text={this.state.excerpt}
-                  className="medium"
-                  onChange={this.handleExcerptChange}
-                />
+                <label htmlFor="excerpt">Excerpt</label>
+                <textarea id="excerpt" rows={3} value={this.state.excerpt} onChange={this.handleExcerptChange}></textarea> 
             </div>
             
             <button className="ui button" type="button" onClick={this.backToList}>Cancel</button>
@@ -140,4 +139,19 @@ var ContentEdit = React.createClass({
     }
 });
 
+
+/*
+<ReactQuill
+    theme="snow"
+    value={this.state.content}
+    onChange={this.handleContentChange}
+/>
+                
+<SimpleEditor
+    id="excerpt"
+    name="excerpt"
+    text={this.state.excerpt}
+    onChange={this.handleExcerptChange}
+/>
+*/
 module.exports = ContentEdit;

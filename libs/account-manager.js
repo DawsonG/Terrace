@@ -22,7 +22,9 @@ exports.manualLogin = function(user, pass, db, callback) {
 			callback('user-not-found');
 		}	else{
 			validatePassword(pass, o.password, function(err, res) {
-			    if (err) throw err;
+			    if (err) {
+		            return console.log(err);
+		        }
 			    
 				if (res){
 					callback(null, o);

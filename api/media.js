@@ -4,6 +4,7 @@ var formidable = require("formidable");
 var async = require("async");
 
 var Post = require("../models/post");
+var Classifier = require("../models/classifier");
 
 function getExtension(filename) {
 	return filename.split('.').pop();
@@ -18,6 +19,70 @@ exports.index = function(req, res) {
     	
     	return res.json(results);
     });
+};
+
+exports.media_form = function(req, res) {
+	if (!req.session.user)
+        return res.status(403).send();
+        
+    var form = new formidable.IncomingForm();
+    var fields = null;
+	form.parse(req, function(err, f, files) {
+	    if (err) throw err;
+	    
+		fields = f;
+	});
+	
+	form.on('end', function() {
+		Post.findById(fields._id, function(err, post) {
+			if (err) {
+				console.log("An error has occurred.");
+				console.log(err);
+			}
+			
+			if (!post) {
+				console.log("Post not found. That's a weird one.");
+			}
+			
+			// Handle updating this media item in parallel.
+			async.parallel([
+				function(callback) { // Handle categories
+					if (!fields.category || fields.category == "")
+						return callback();
+				
+					Classifier.update({ name: fields.category, classifier_type: "category" }, { name: fields.category }, { upsert: true }, function(err, classifier) {
+						if (err) {
+							console.log(err);
+						}
+						
+						post.category = fields.category;
+						return callback();
+					});
+				},
+				function(callback) { // Handle tags
+					//async.eachSeries(tags
+					return callback();
+				},
+				function(callback) { // Handle files
+					if (form.openedFiles.length > 0) {
+						var file = form.openedFiles[0];
+						var temp_path = file.path;   
+				    	var file_path = process.cwd() + "/content/uploads/thumbnail/" + post.additional.file_name;
+						
+						fs.copySync(temp_path, file_path, {clobber: true });
+					} 
+					
+					return callback();
+				}
+			], function() {
+				post.title = fields.title;
+				
+				post.save(function() {
+					return res.json({ success: true });	
+				});
+			});
+		});
+	});
 };
 
 exports.multiupload = function(req, res) {
@@ -49,13 +114,13 @@ exports.multiupload = function(req, res) {
 			},
 			{
 				name : "small",
-				width : 200,
-				height : 200
+				width : 60,
+				height : 60
 			},
 			{
 				name: "thumbnail",
-				width : 60,
-				height : 60
+				width : 200, //req.site.thumbnail_width
+				height : 200 //req.site.thumbnail_height
 			}
 		];
 		
