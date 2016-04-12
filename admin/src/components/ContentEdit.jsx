@@ -1,6 +1,6 @@
 var React = require('react');
 var brace = require('brace');
-var AceEditor = require("react-ace");
+//var AceEditor = require("react-ace");
 
 require('brace/mode/handlebars');
 require("brace/theme/github");
@@ -107,6 +107,18 @@ var ContentEdit = React.createClass({
         this.serverRequest.abort();
     },
     
+    /*
+    <AceEditor
+        mode="handlebars"
+        theme="github"
+        name="content"
+        height="400px"
+        width="100%"
+        value={this.state.content}
+        onChange={this.handleContentChange}
+     />
+    */
+    
     render: function() {
         return (<form onSubmit={this.handleSubmit} className="ui form">
             <div className="required field">
@@ -117,15 +129,7 @@ var ContentEdit = React.createClass({
             
             <div className="field">
                 <label htmlFor="content">Content</label>
-                <AceEditor
-                    mode="handlebars"
-                    theme="github"
-                    name="content"
-                    height="400px"
-                    width="100%"
-                    value={this.state.content}
-                    onChange={this.handleContentChange}
-                 />
+                
             </div>
             
             <div className="field">

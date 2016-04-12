@@ -1,29 +1,27 @@
 var React = require("react");
+var IndexLink = require("react-router").IndexLink;
+var Link = require("react-router").Link;
 
 var MenuItem = React.createClass({
-    getInitialState: function() {
-      return { active: false };  
-    },
-    
-    handleClick: function() {
-      this.props.onClick(this);  
-    },
-    
     render: function() {
         var name = this.props.name;
+        var path = this.props.path || name.toLowerCase();
+        var link = '/admin/' + path;
+        if (this.props.indexRoute)
+            link = "/admin/";
+        
         var label = this.props.label;
         
-        var className = (this.props.active) ? 'active item' : 'item';
         var badge = "";
         
         if ($.isNumeric(label) && label > -1)
             badge = (<div className="ui teal label">{label}</div>);
-        
+
         return (
-            <a onClick={this.handleClick} className={className}>
+            <Link to={link} className="item" onlyActiveOnIndex={this.props.indexRoute} activeClassName="active">
                 {name}
                 {badge}
-            </a>
+            </Link>
         );
     }
 });

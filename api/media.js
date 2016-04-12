@@ -34,6 +34,8 @@ exports.media_form = function(req, res) {
 	});
 	
 	form.on('end', function() {
+		var rtn = { success: true }; // stores the statuses of various requests
+		
 		Post.findById(fields._id, function(err, post) {
 			if (err) {
 				console.log("An error has occurred.");
@@ -55,6 +57,9 @@ exports.media_form = function(req, res) {
 							console.log(err);
 						}
 						
+						if (classifier.upserted && classifier.upserted.length > 0) {
+							rtn.upserted = true;
+						}
 						post.category = fields.category;
 						return callback();
 					});
@@ -78,7 +83,7 @@ exports.media_form = function(req, res) {
 				post.title = fields.title;
 				
 				post.save(function() {
-					return res.json({ success: true });	
+					return res.json(rtn);	
 				});
 			});
 		});

@@ -13,7 +13,7 @@ module.exports = function(app) {
   };
   
   var isPublicAsset = function(file) {
-    if (file.indexOf('/css/') > -1 || file.indexOf('/js/') > -1) {
+    if (file.indexOf('css/') == 0 || file.indexOf('js/') == 0) {
       return true;
     }
     
@@ -103,8 +103,9 @@ module.exports = function(app) {
   });
   
   app.get('/admin*', function(req, res) {
-    var file = req.params[0];
-    if (!file) {
+    var file = req.params[0].replace(/^\/+|\/+$/g, '');
+    var whitelist = ['content','media', 'settings', 'users'];
+    if (!file || whitelist.indexOf(file) > -1) { 
       file = "index.html";
     }
 
@@ -119,5 +120,4 @@ module.exports = function(app) {
 
   // ---- Frontend ----
   app.get('/*', controller.index);
-  app.post('/contact', controller.contact);
 };

@@ -23,9 +23,28 @@ exports.getSlugs = function(req, res) {
 };
 
 exports.getClassifiers = function(req, res) {
-  Classifier.find({ classifier_type: req.query.field }, function(err, results) {
+  var query = {};
+  if (req.query.field != "both") {
+    query = { classifier_type: req.query.field };
+  }
+  
+  Classifier.find(query, function(err, results) {
     if (err)
       return res.send(err);
+    
+    if (req.query.field == "both") {
+      console.log(results);
+      var rtn = { tag: [], category: [] };
+      results.forEach(function(result) {
+        if (result.classifier_type == "tag") {
+          rtn.tag.push(result);
+        } else {
+          rtn.category.push(result);
+        }
+      });
+      
+      return res.json(rtn);
+    }
     
     return res.json(results);
   });

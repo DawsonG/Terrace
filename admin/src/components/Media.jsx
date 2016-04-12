@@ -3,7 +3,8 @@ var ReactDOM = require("react-dom");
 
 var Dropzone = require("./common/Dropzone");
 var ClassifierDropdown = require("./common/ClassifierDropdown");
-
+var axios = require('axios');
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 var MediaItem = React.createClass({
     getInitialState: function() {
@@ -18,8 +19,6 @@ var MediaItem = React.createClass({
     },
    
     componentDidMount: function() {
-        console.log(this.props.image)
-        
         this.setState({ 
             _id: this.props.image._id,
             title: this.props.image.title,
@@ -47,8 +46,11 @@ var MediaItem = React.createClass({
             processData: false, // Don't process the files
             contentType: false,
             success: function(data, textStatus, jqXHR) {
-                console.log(self.state.thumbnail);
-                self.setState({ url: self.state.thumbnail.imageUrl });
+                if (self.state.thumbnail && self.state.thumbnail.imageUrl)
+                    self.setState({ url: self.state.thumbnail.imageUrl });
+                
+                if (data.upserted && $.isFunction(self.props.callbackParent))
+                    self.props.callbackParent({ reload: true });
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log('ERRORS: ' + textStatus);
@@ -125,19 +127,55 @@ var MediaItem = React.createClass({
 var Media = React.createClass({
     displayName: "Media",
     getInitialState: function() {
-        return { media: [], queue: [] };
+        return { media: [], queue: [], 
+            classifiers: {
+                tag: [],
+                category: []
+            } 
+        };
+    },
+    
+    getChildContext: function() {
+        return { classifiers: this.state.classifiers };
+    },
+    
+    childContextTypes: {
+        classifiers: React.PropTypes.object
+    },
+    
+    onChildChanged: function(newState) {
+        var self = this;
+        if (newState.reload) {
+            this.serverRequest();
+        }
+    },
+    
+    serverRequest: function() {
+        var self = this;
+        
+        function getIndex() {
+            return axios.get('/api/media/index');
+        }
+        
+        function getClassifiers() {
+            return axios.get('/api/posts/getClassifiers', {
+                params: { field: "both" }
+            });
+        }
+        
+        return axios.all([getIndex(), getClassifiers()]).then(axios.spread(function(index, classifiers) {
+            self.setState({ media: index.data, classifiers: classifiers.data });
+        }));
     },
     
     componentDidMount: function() {
         var self = this;
         
-        this.serverRequest = $.get('/api/media/index', function(data) {
-           self.setState({media: data}); 
-        });
+        self.serverRequest();
     },
     
     componentWillUnmount: function() {
-        this.serverRequest.abort();
+        //this.serverRequest.abort();
     },
     
     onAddFile: function(res) {
@@ -185,6 +223,8 @@ var Media = React.createClass({
     },
     
     render: function() {
+        var self = this;
+        
         return (<div>
             <h1 className="ui dividing header">MEDIA</h1>
             
@@ -213,7 +253,7 @@ var Media = React.createClass({
             <div className="ui six cards">
                 {this.state.media.map(function(image) {
                   return (
-                    <MediaItem key={image._id} image={image} />
+                    <MediaItem key={image._id} image={image} callbackParent={self.onChildChanged} />
                   );
                 })}
             </div>

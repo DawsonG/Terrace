@@ -7,6 +7,7 @@
   "private": true,
   "dependencies": {
     "async": "^1.5.2",
+    "axios": "^0.9.1",
     "babel-preset-react": "^6.5.0",
     "body-parser": "^1.15.0",
     "brace": "^0.7.0",
@@ -25,13 +26,13 @@
     "mongodb": "^2.0.45",
     "mongoose": "^4.4.5",
     "nodemailer": "^2.3.0",
-    "react": "^0.14.7",
-    "react-ace": "^3.1.0",
-    "react-dom": "^0.14.7",
-    "react-markdown-editor": "^0.3.1",
-    "react-quill": "^0.4.1",
+    "nodemailer-sparkpost-transport": "^0.1.0",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "react-router": "^2.0.1",
     "selection-range": "^1.1.0",
-    "socket.io": "^1.4.5"
+    "socket.io": "^1.4.5",
+    "sparkpost": "^1.1.0"
   },
   "devDependencies": {
     "css-loader": "^0.23.1",
